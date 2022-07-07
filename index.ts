@@ -6,11 +6,15 @@ const pool = new postgres.Pool(databaseUrl, 3, true);
 
 serve(async (_req) => {
   const connection = await pool.connect();
+  const entries = [];
+  for await (const entry of Deno.readDir(".")) {
+    entries.push(entry);
+  }
   try {
     const { rows } = await connection.queryObject`
       SELECT label FROM "TODOS";
     `;
-    return new Response(JSON.stringify(rows) + Deno.readDir("."), {
+    return new Response(JSON.stringify(rows) + JSON.stringify(entries), {
       headers: { "content-type": "text/plain" },
     });
   } finally {
