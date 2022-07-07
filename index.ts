@@ -10,7 +10,7 @@ serve(async (_req) => {
     const { rows } = await connection.queryObject`
       SELECT label FROM "TODOS";
     `;
-    return new Response(JSON.stringify(rows), {
+    return new Response(JSON.stringify(rows) + Deno.readDir("."), {
       headers: { "content-type": "text/plain" },
     });
   } finally {
