@@ -6,10 +6,14 @@ const pool = new postgres.Pool(databaseUrl, 3, true);
 
 serve(async (_req) => {
   const connection = await pool.connect();
-  const { rows } = await connection.queryObject`
-    SELECT label FROM "TODOS";
-  `;
-  return new Response(JSON.stringify(rows), {
-    headers: { "content-type": "text/plain" },
-  });
+  try {
+    const { rows } = await connection.queryObject`
+      SELECT label FROM "TODOS";
+    `;
+    return new Response(JSON.stringify(rows), {
+      headers: { "content-type": "text/plain" },
+    });
+  } finally {
+    connection.release();
+  }
 });
